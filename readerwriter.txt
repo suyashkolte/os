@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+sem_t x, y;
+pthread_t writer_thread, reader_threads[100];
+int reader_count = 0;
+
+void *reader(void *param) {
+    sem_wait(&x);
+    reader_count++;
+    if (reader_count == 1)
+        sem_wait(&y);
+    sem_post(&x);
+    printf("%d reader is inside\n", reader_count);
+    usleep(3000); 
+    
+    sem_wait(&x);
+    reader_count--;
+    if (reader_count == 0)
+        sem_post(&y);
+    sem_post(&x);
+    printf("%d Reader is leaving\n", reader_count + 1);
+    return NULL;
+}
+
+void *writer(void *param) {
+    printf("Writer is trying to enter\n");
+    sem_wait(&y);
+    printf("Writer has entered\n");
+    sem_post(&y);
+    printf("Writer is leaving\n");
+    return NULL;
+}
+
+int main() {
+    int n2, i;
+    printf("Enter the number of readers:");
+    scanf("%d", &n2);
+    printf("\n");
+    
+    sem_init(&x, 0, 1);
+    sem_init(&y, 0, 1);
+    
+    pthread_create(&writer_thread, NULL, writer, NULL); 
+    
+    for (i = 0; i < n2; i++) {
+        pthread_create(&reader_threads[i], NULL, reader, NULL); 
+    }
+    
+    pthread_join(writer_thread, NULL); 
+    
+    for (i = 0; i < n2; i++) {
+        pthread_join(reader_threads[i], NULL); 
+    }
+    
+    sem_destroy(&x);
+    sem_destroy(&y);
+    
+    return 0;
+}
