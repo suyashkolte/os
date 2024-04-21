@@ -1,0 +1,179 @@
+#include <iostream>
+using namespace std;
+void bestFit(int process, int block, int processSize[], int blockSize[])
+{
+int allocation[process], memoryCopy[block] , allocatedBlock[block];
+for (int i = 0; i < process; i++)
+allocation[i] = -1;
+for (int i = 0; i < block; i++){
+memoryCopy[i] = blockSize[i];
+allocatedBlock[i] = -1;
+}
+for (int i = 0; i < process; i++)
+{
+int bestIndex = -1;
+for (int j = 0; j < block; j++)
+{
+if (memoryCopy[j] >= processSize[i] && allocatedBlock[j] == -1)
+{
+if (bestIndex == -1)
+bestIndex = j;
+else if (memoryCopy[bestIndex] > memoryCopy[j])
+bestIndex = j;
+}
+}
+if (bestIndex != -1)
+{
+allocation[i] = bestIndex;
+memoryCopy[bestIndex] -= processSize[i];
+allocatedBlock[bestIndex] = 1;
+}
+}
+cout << "P No.\tSize\tBlock no. \t Block Size\n";
+for (int i = 0; i < process; i++)
+{
+cout << "p" << i + 1 << "\t" << processSize[i] << "\t";
+if (allocation[i] != -1)
+cout << allocation[i] + 1 << "\t\t" <<blockSize[allocation[i]]<< "\t";
+else
+cout << "Not Allocated";
+cout << endl;
+}
+}
+void firstFit(int process, int block, int processSize[], int blockSize[])
+{
+int allocation[process], memoryCopy[block] , allocatedBlock[block];
+for (int i = 0; i < process; i++)
+allocation[i] = -1;
+for (int j = 0; j < block; j++){
+memoryCopy[j] = blockSize[j];
+allocatedBlock[j] = -1;
+}
+for (int i = 0; i < process; i++)
+{
+for (int j = 0; j < block; j++)
+{
+if (memoryCopy[j] >= processSize[i] && allocatedBlock[j] == -1)
+{
+allocation[i] = j;
+memoryCopy[j] -= processSize[i];
+allocatedBlock[j] = 1;
+break;
+}
+}
+}
+cout << "P No.\tSize\tBlock no. \t Block Size\n";
+for (int i = 0; i < process; i++)
+{
+cout << "p" << i + 1 << "\t" << processSize[i] << "\t";
+if (allocation[i] != -1)
+cout << allocation[i] + 1 << "\t\t" << blockSize[allocation[i]] << "\t";
+else
+cout << "Not Allocated";
+cout << endl;
+}
+}
+void worstFit(int process, int block, int processSize[], int blockSize[])
+{
+int allocation[process], memoryCopy[block] , allocatedBlock[block];
+for (int i = 0; i < process; i++)
+allocation[i] = -1;
+for (int j = 0; j < block; j++){
+memoryCopy[j] = blockSize[j];
+allocatedBlock[j] = -1;
+}
+for (int i = 0; i < process; i++)
+{
+int worstIndex = -1;
+for (int j = 0; j < block; j++)
+{
+if (memoryCopy[j] >= processSize[i] && allocatedBlock[j] == -1)
+{
+if (worstIndex == -1)
+worstIndex = j;
+else if (memoryCopy[worstIndex] < memoryCopy[j])
+worstIndex = j;
+}
+}
+if (worstIndex != -1)
+{
+allocation[i] = worstIndex;
+memoryCopy[worstIndex] -= processSize[i];
+allocatedBlock[worstIndex] = 1;
+}
+}
+cout << "P No.\tSize\tBlock no. \t Block Size\n";
+for (int i = 0; i < process; i++)
+{
+cout << "p" << i + 1 << "\t" << processSize[i] << "\t";
+if (allocation[i] != -1)
+cout << allocation[i] + 1 << "\t\t" << blockSize[allocation[i]] << "\t";
+else
+cout << "Not Allocated";
+cout << endl;
+}
+}
+void nextFit(int process, int block, int processSize[], int blockSize[])
+{
+int allocation[process], j = 0, memoryCopy[block] , allocatedBlock[block];
+for (int i = 0; i < process; i++)
+allocation[i] = -1;
+for (int j = 0; j < block; j++){
+memoryCopy[j] = blockSize[j];
+allocatedBlock[j] = -1;
+}
+for (int i = 0; i < process; i++)
+{
+while (j < block)
+{
+if (memoryCopy[j] >= processSize[i] && allocatedBlock[j] == -1)
+{
+allocation[i] = j;
+memoryCopy[j] -= processSize[i];
+allocatedBlock[j] = 1;
+break;
+}
+j = (j + 1) % block;
+}
+}
+cout << "P No.\tSize\tBlock no. \t Block Size\n";
+for (int i = 0; i < process; i++)
+{
+cout << "p" << i + 1 << "\t" << processSize[i] << "\t";
+if (allocation[i] != -1)
+cout << allocation[i] + 1 << "\t\t" << blockSize[allocation[i]] << "\t";
+else
+cout << "Not Allocated";
+cout << endl;
+}
+}
+int main()
+{
+int process, block, choice;
+cout << "Enter number of processes : ";
+cin >> process;
+cout << "Enter number of blocks : ";
+cin >> block;
+int processSize[process], blockSize[block];
+cout << "Enter the size of the processes \n";
+for (int i = 0; i < process; i++)
+{
+cout << "Process no. " << i << ":";
+cin >> processSize[i];
+}
+cout << "Enter the size of the blocks \n";
+for (int i = 0; i < block; i++)
+{
+cout << "Block no. " << i << ":";
+cin >> blockSize[i];
+}
+cout << "\nBest Fit Allocation" << endl;
+bestFit(process, block, processSize, blockSize);
+cout << "\nFirst Fit Allocation" << endl;
+firstFit(process, block, processSize, blockSize);
+cout << "\nNext Fit Allocation" << endl;
+nextFit(process, block, processSize, blockSize);
+cout << "\nWorst Fit Allocation" << endl;
+worstFit(process, block, processSize, blockSize);
+return 0;
+}
