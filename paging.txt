@@ -1,0 +1,147 @@
+#include <iostream>
+using namespace std;
+
+void FIFO(int frames, int pages, int incomingStream[]) {
+    int pageFaults = 0;
+    int temp[frames];
+    for (int m = 0; m < frames; m++) {
+        temp[m] = -1;
+    }
+
+    cout << "Incoming \t";
+    for (int m = 0; m < frames; m++) {
+        cout << "Frame " << m + 1 << "\t\t";
+    }
+
+    for (int m = 0; m < pages; m++) {
+        int s = 0;
+        for (int n = 0; n < frames; n++) {
+            if (incomingStream[m] == temp[n]) {
+                s++;
+                pageFaults--;
+            }
+        }
+        pageFaults++;
+
+        if ((pageFaults <= frames) && (s == 0)) {
+            temp[m] = incomingStream[m];
+        } else if (s == 0) {
+            temp[(pageFaults - 1) % frames] = incomingStream[m];
+        }
+
+        cout << "\n";
+        cout << incomingStream[m] << "\t\t\t\t";
+        for (int n = 0; n < frames; n++) {
+            if (temp[n] != -1)
+                cout << temp[n] << "\t\t\t\t";
+            else
+                cout << "- \t\t\t\t";
+        }
+    }
+    cout << "\n\nTotal Page Faults:\t" << pageFaults;
+    cout << "\nTotal Hits :\t" << pages - pageFaults;
+}
+
+void LRU(int total_frames, int total_pages, int pages[]) {
+    int page_fault = 0;
+    int frames[total_frames];
+    int temp[total_frames];
+
+    cout << "Incoming \t";
+    for (int m = 0; m < total_frames; m++) {
+        cout << "Frame " << m + 1 << "\t\t";
+    }
+    cout << endl;
+
+    for (int m = 0; m < total_frames; m++) {
+        frames[m] = -1;
+    }
+
+    for (int n = 0; n < total_pages; n++) {
+        cout << pages[n] << "\t\t\t"; 
+        int a = 0, b = 0;
+
+        for (int m = 0; m < total_frames; m++) {
+            if (frames[m] == pages[n]) {
+                a = 1;
+                b = 1;
+                break;
+            }
+        }
+
+        if (a == 0) {
+            for (int m = 0; m < total_frames; m++) {
+                if (frames[m] == -1) {
+                    frames[m] = pages[n];
+                    b = 1;
+                    page_fault++;
+                    break;
+                }
+            }
+        }
+
+        if (b == 0) {
+            for (int m = 0; m < total_frames; m++) {
+                temp[m] = 0;
+            }
+
+            for (int k = n - 1, l = 1; l <= total_frames - 1; l++, k--) {
+                for (int m = 0; m < total_frames; m++) {
+                    if (frames[m] == pages[k]) {
+                        temp[m] = 1;
+                    }
+                }
+            }
+
+            int position;
+            for (int m = 0; m < total_frames; m++) {
+                if (temp[m] == 0)
+                    position = m;
+            }
+
+            frames[position] = pages[n];
+            page_fault++;
+        }
+
+        for (int m = 0; m < total_frames; m++) {
+            cout << frames[m] << "\t\t\t\t";
+        }
+        cout << endl;
+    }
+
+    cout << endl << "Total Number of Page Faults:\t" << page_fault << endl;
+}
+
+int main() {
+    int choice, frames, pages;
+    cout << "Enter the frame size: ";
+    cin >> frames;
+
+    cout << "Enter the number of pages: ";
+    cin >> pages;
+
+    int incomingStream[pages];
+    cout << "Enter the page values: ";
+    for (int i = 0; i < pages; i++) {
+        cin >> incomingStream[i];
+    }
+
+    cout << "Choose paging algorithm:" << endl;
+    cout << "1. FIFO" << endl;
+    cout << "2. LRU" << endl;
+    cout << "Enter your choice: ";
+    cin >> choice;
+
+    switch(choice) {
+        case 1:
+            FIFO(frames, pages, incomingStream);
+            break;
+        case 2:
+            LRU(frames, pages, incomingStream);
+            break;
+        default:
+            cout << "Invalid choice" << endl;
+    }
+
+    return 0;
+}
