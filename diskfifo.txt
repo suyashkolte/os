@@ -8,7 +8,7 @@ int main()
  cout << "Enter number of requests: ";
  cin >> n;
  cout << "Enter the requests: ";
- // creating an array of size n 
+
  vector<int> a(n);
  for (i = 0; i < n; i++)
  { 
@@ -24,15 +24,15 @@ int main()
  } 
  cout << "Enter the head position: ";
  cin >> h;
- // head will be at h at the starting 
+
  int temp = h;
  cout << temp;
  for (i = 0; i < n; i++)
  { 
  cout << " -> " << a[i] << ' ';
- // calculating the difference for the head movement 
+
  sum += abs(a[i] - temp);
- // head is now at the next I/O request 
+
  temp = a[i];
  } 
  cout << '\n';
